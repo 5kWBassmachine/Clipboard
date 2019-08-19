@@ -8,7 +8,8 @@ Android 4.0.3 (API level 15)
 ## Installation
 Download one apk from the
 [releases](https://github.com/5kWBassmachine/Clipboard/releases),
-navigate to it with your file manager and open the apk to install.<br>
+navigate to it with your file manager and open the apk to install.
+
 You need to allow the installation of non-PlayStore apps in your settings.
 
 ## Screenshots
