@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Clipboard</string>
+
+    <string name="alert_delete_title">Warning</string>
+    <string name="alert_delete_message">Do you really want to delete this entry?</string>
+    <string name="alert_edit_title">Edit entry</string>
+    <string name="alert_add_title">Add entry</string>
+    <string name="alert_edittext_key">Name</string>
+    <string name="alert_edittext_value">Value</string>
+
+    <string name="alert_yes">Yes</string>
+    <string name="alert_no">No</string>
+    <string name="alert_confirm">Ok</string>
+    <string name="alert_abort">Abort</string>
+
+    <string name="feedback_error_not_implemented">Not implemented yet!</string>
+
+    <string name="feedback_empty_file">Clipboard is empty!</string>
+    <string name="feedback_copied">Copied to clipboard!</string>
+    <string name="feedback_deleted">Deleted entry!</string>
+    <string name="feedback_edited">Edited entry!</string>
+    <string name="feedback_added">Added entry!</string>
+</resources>
