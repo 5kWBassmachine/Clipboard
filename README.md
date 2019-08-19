@@ -1,10 +1,9 @@
 # Clipboard
 A list of texts to copy to your clipboard...
 # App Installation
-Download the apk, navigate to it with your file manager and tab to install.
+Download one apk from the [releases](https://github.com/5kWBassmachine/Clipboard/releases), navigate to it with your file manager and tab to install.
 
 You need to allow the installation of non-PlayStore apps in your settings.
 
-[app-release.apk](app/release/app-release.apk)
 # Screenshots
 <img src="screenshots/screenshot-1.png" title="screenshot 1 - list" width="200"> <img src="screenshots/screenshot-2.png" title="screenshot 2 - add dialog" width="200"> <img src="screenshots/screenshot-3.png" title="screenshot 3 - edit dialog" width="200"> <img src="screenshots/screenshot-4.png" title="screenshot 4 - remove dialog" width="200">
