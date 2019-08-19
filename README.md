@@ -5,7 +5,7 @@ A list of texts to copy to your clipboard...
 Minimal Android version:<br>
 Android 4.0.3 (API level 15)
 
-## App Installation
+## Installation
 Download one apk from the
 [releases](https://github.com/5kWBassmachine/Clipboard/releases),
 navigate to it with your file manager and tab to install.<br>
