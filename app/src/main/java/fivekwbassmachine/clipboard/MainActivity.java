@@ -39,14 +39,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.InputType;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -58,9 +54,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnButtonListener {
     private static final String TAG = "MainActivity";
-    private List<String> listKey = new ArrayList<String>();
-    private List<String> listValue = new ArrayList<String>();
-    private View parentLayout;
+    private List<String> listKey = new ArrayList<>();
+    private List<String> listValue = new ArrayList<>();
+    //unused-0 private View parentLayout;
     private Context context;
     private Utils.FileInternal fileInternal;
     private MyAdapter myAdapter;
@@ -69,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.parentLayout = findViewById(android.R.id.content);
+        //unused-0 this.parentLayout = findViewById(android.R.id.content);
         this.context = this;
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -80,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.list);
+        RecyclerView recyclerView = findViewById(R.id.list);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -98,10 +94,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
         switch(action) {
             case Constants.ACTION_COPY:
                 String value = listValue.get(position);
-                ClipboardManager clipboardManager = (ClipboardManager)this.getSystemService(this.CLIPBOARD_SERVICE);
+                ClipboardManager clipboardManager = (ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
                 ClipData clipData = ClipData.newPlainText("input", value);
-                clipboardManager.setPrimaryClip(clipData);
-                Toast.makeText(getApplicationContext(), R.string.feedback_copied, Toast.LENGTH_SHORT).show();
+                if (clipboardManager != null) {
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(getApplicationContext(), R.string.feedback_copied, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.wtf(TAG, "onButtonClick: unexpected error: clipboardManager is null");
+                }
                 break;
             case Constants.ACTION_EDIT:
                 edit(position);
@@ -192,14 +192,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
         layout.addView(value);
 
         new AlertDialog.Builder(context)
-                .setTitle(getString(R.string.alert_edit_title))
+                .setTitle(getString(R.string.alert_add_title))
                 .setView(layout)
                 .setPositiveButton(getString(R.string.alert_confirm), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         listKey.add(key.getText().toString());
                         listValue.add(value.getText().toString());
-                        applyChanges(R.string.feedback_edited);
+                        applyChanges(R.string.feedback_added);
                     }
                 })
                 .setNegativeButton(getString(R.string.alert_abort), null)
