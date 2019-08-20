@@ -36,18 +36,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import javax.security.auth.login.LoginException;
-
 public interface Utils {
-    public class FileInternal {
-        public static final short WRITE_PREPEND = 0;
-        public static final short WRITE_APPEND = 1;
+    class FileInternal {
+        static final short WRITE_PREPEND = 0;
+        static final short WRITE_APPEND = 1;
         public static final short WRITE_REPLACE = 2;
         private final Context context;
         private final String filename;
         private final boolean create;
         private short currentTry = 0;
-        private short maximalTry = 2;
+        private final short maximalTry = 2;
 
         private final static String TAG = "Utils.FileInternal";
 
@@ -77,7 +75,7 @@ public interface Utils {
                     while ((line = bufferedReader.readLine()) != null) {
                         sb.append(line);
                     }
-                    Log.d(TAG, "write: file written");
+                    Log.d(TAG, "read: read file");
                     return sb.toString();
                 } catch (FileNotFoundException e) {
                     this.currentTry++;
@@ -123,12 +121,11 @@ public interface Utils {
                             content = content;
                             break;*/
                     }
-                    FileOutputStream fos = context.openFileOutput(this.filename, context.MODE_PRIVATE);
+                    FileOutputStream fos = context.openFileOutput(this.filename, Context.MODE_PRIVATE);
                     OutputStreamWriter outputWriter=new OutputStreamWriter(fos);
                     outputWriter.write(content);
                     outputWriter.close();
                     Log.d(TAG, "write: file written");
-                    Log.wtf(TAG, "write: " + content);
                 } catch (FileNotFoundException e) {
                     this.currentTry++;
                     if (this.create) {
