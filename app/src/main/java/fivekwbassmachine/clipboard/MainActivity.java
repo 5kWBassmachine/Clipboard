@@ -91,13 +91,24 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
-                int positionDragged = dragged.getAdapterPosition();
+            public boolean canDropOver(RecyclerView recyclerView, RecyclerView.ViewHolder current, RecyclerView.ViewHolder target) {
+                return current.getItemViewType() == target.getItemViewType();
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int positionDragged = viewHolder.getAdapterPosition();
                 int positionTarget = target.getAdapterPosition();
                 Collections.swap(listKey, positionDragged, positionTarget);
                 Collections.swap(listValue, positionDragged, positionTarget);
+                return true;
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                // Action finished
                 applyChanges();
-                return false;
             }
 
             @Override
