@@ -34,8 +34,10 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +52,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnButtonListener {
@@ -85,6 +89,23 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
 
         getLists();
 
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
+                int positionDragged = dragged.getAdapterPosition();
+                int positionTarget = target.getAdapterPosition();
+                Collections.swap(listKey, positionDragged, positionTarget);
+                Collections.swap(listValue, positionDragged, positionTarget);
+                applyChanges();
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -224,5 +245,21 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
         }
 
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
+    }
+    private void applyChanges() {
+        myAdapter.notifyDataSetChanged();
+        try {
+            JSONArray tmpArray = new JSONArray();
+            for(int i = 0; i < listKey.size(); i++) {
+                JSONObject tmpObject = new JSONObject();
+                tmpObject.put("key", listKey.get(i));
+                tmpObject.put("value", listValue.get(i));
+                tmpArray.put(i, tmpObject);
+            }
+            fileInternal.resetCurrentTry();
+            fileInternal.write(Utils.FileInternal.WRITE_REPLACE, tmpArray.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
