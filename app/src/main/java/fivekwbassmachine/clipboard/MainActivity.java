@@ -167,9 +167,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
                                         }
                                     } else {
                                         Log.e(TAG, "onClick: cant import data from clipboard: invalid mime type");
+                                        Toast.makeText(context, R.string.feedback_error_import_invalid_clipboard, Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     Log.e(TAG, "onClick: cant import data from clipboard: no primaryclip");
+                                    Toast.makeText(context, R.string.feedback_error_import_invalid_clipboard, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         })
