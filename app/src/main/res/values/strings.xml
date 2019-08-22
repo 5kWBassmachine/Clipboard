@@ -7,11 +7,15 @@
     <string name="alert_add_title">Add entry</string>
     <string name="alert_edittext_key">Name</string>
     <string name="alert_edittext_value">Value</string>
+    <string name="alert_export_import_title">Export/ Import list</string>
+    <string name="alert_export_import_example">{{\"key\":\"item name\",\"value\":\"the text to copy\"},…}\n\nImport/ Export imports/ exports from/ to the current clipboard.</string>
 
     <string name="alert_yes">Yes</string>
     <string name="alert_no">No</string>
-    <string name="alert_confirm">Ok</string>
+    <string name="alert_confirm">OK</string>
     <string name="alert_abort">Abort</string>
+    <string name="alert_confirm_import">Import</string>
+    <string name="alert_confirm_export">Export</string>
 
     <string name="feedback_error_not_implemented">Not implemented yet!</string>
 
@@ -20,4 +24,12 @@
     <string name="feedback_deleted">Deleted entry!</string>
     <string name="feedback_edited">Edited entry!</string>
     <string name="feedback_added">Added entry!</string>
+
+    <string name="action_export_import">Export/ Import list</string>
+    <string name="action_update">Search for Updates</string>
+    <string name="action_fork">Fork me on GitHub</string>
+    <string name="action_version">Version </string>
+
+    <string name="internal_fork">http://www.github.com/5kWBassMachine/Clipboard</string>
+    <string name="feedback_error_import_invalid_clipboard">Can\'t import: Invalid data</string>
 </resources>
