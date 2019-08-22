@@ -62,6 +62,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
+
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnButtonListener {
     private static final String TAG = "MainActivity";
     private List<String> listKey = new ArrayList<>();
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
                                 String value;
                                 ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(CLIPBOARD_SERVICE);
                                 if (clipboardManager.hasPrimaryClip()) {
-                                    if (clipboardManager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                                    if (clipboardManager.getPrimaryClip().getItemAt(0).getText().toString() != "") {
                                         value = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
                                         if (Utils.JSON.isJSONValid(value, Utils.JSON.JSON_ARRAY)) {
                                             list.write(Utils.FileHandler.WRITE_REPLACE, value);
