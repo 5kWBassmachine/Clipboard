@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
                                     if (clipboardManager.getPrimaryClip().getItemAt(0).getText().toString() != "") {
                                         value = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
                                         if (Utils.JSON.isJSONValid(value, Utils.JSON.JSON_ARRAY)) {
+                                            list.resetCurrentTry();
                                             list.write(Utils.FileHandler.WRITE_REPLACE, value);
                                             recreate();
                                         } else {
