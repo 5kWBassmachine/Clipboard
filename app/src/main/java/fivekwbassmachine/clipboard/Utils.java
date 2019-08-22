@@ -28,6 +28,10 @@ package fivekwbassmachine.clipboard;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,7 +41,43 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public interface Utils {
-    class FileInternal {
+    class JSON {
+        public static final short JSON_OBJECT = 0;
+        public static final short JSON_ARRAY = 1;
+        public static boolean isJSONValid(String json) {
+            try {
+                new JSONObject(json);
+            } catch (JSONException ex) {
+                // edited, to include @Arthur's comment
+                // e.g. in case JSONArray is valid as well...
+                try {
+                    new JSONArray(json);
+                } catch (JSONException ex1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static boolean isJSONValid(String json, short type) {
+            if (type == 0) {
+                try {
+                    new JSONObject(json);
+                } catch (JSONException e) {
+                    return false;
+                }
+            } else if (type == 1) {
+                try {
+                    new JSONArray(json);
+                } catch (JSONException e) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+            return true;
+        }
+    }
+    class FileHandler {
         static final short WRITE_PREPEND = 0;
         static final short WRITE_APPEND = 1;
         public static final short WRITE_REPLACE = 2;
@@ -47,9 +87,9 @@ public interface Utils {
         private short currentTry = 0;
         private final short maximalTry = 2;
 
-        private final static String TAG = "Utils.FileInternal";
+        private final static String TAG = "Utils.FileHandler";
 
-        public FileInternal(Context context, String filename, boolean create) {
+        public FileHandler(Context context, String filename, boolean create) {
             this.context = context;
             this.filename = filename;
             this.create = create;
@@ -75,24 +115,24 @@ public interface Utils {
                     while ((line = bufferedReader.readLine()) != null) {
                         sb.append(line);
                     }
-                    Log.d(TAG, "read: read file");
+                    Log.d(TAG, "read: " + this.filename + ": read file");
                     return sb.toString();
                 } catch (FileNotFoundException e) {
                     this.currentTry++;
                     if (this.create) {
-                        Log.i(TAG, "read: file does not exist, creating and retrying to read");
+                        Log.i(TAG, "read: " + this.filename + ": file does not exist, creating and retrying to read");
                         return read();
                     } else {
-                        Log.e(TAG, "read: cant read from file: " + e.getMessage());
+                        Log.e(TAG, "read: " + this.filename + ": cant read from file: " + e.getMessage());
                         return "";
                     }
                 } catch (IOException e) {
                     this.currentTry++;
-                    Log.e(TAG, "read: cant read from file: " + e.getMessage());
+                    Log.e(TAG, "read: " + this.filename + ": cant read from file: " + e.getMessage());
                     return "";
                 }
             } else {
-                Log.e(TAG, "read: cant read from file: maximum trys (" + this.maximalTry + ") reached");
+                Log.e(TAG, "read: " + this.filename + ": cant read from file: maximum trys (" + this.maximalTry + ") reached");
                 return "";
             }
         }
@@ -101,9 +141,9 @@ public interface Utils {
          *
          * @param action    action
          *                  <hint>
-         *                  Utils.FileInternal.WRITE_PREPEND
-         *                  Utils.FileInternal.WRITE_APPEND
-         *                  Utils.FileInternal.WRITE_REPLACE
+         *                  Utils.FileHandler.WRITE_PREPEND
+         *                  Utils.FileHandler.WRITE_APPEND
+         *                  Utils.FileHandler.WRITE_REPLACE
          *                  </hint>
          * @param content   content to write as String
          */
@@ -125,20 +165,20 @@ public interface Utils {
                     OutputStreamWriter outputWriter=new OutputStreamWriter(fos);
                     outputWriter.write(content);
                     outputWriter.close();
-                    Log.d(TAG, "write: file written");
+                    Log.d(TAG, "write: " + this.filename + ": file written");
                 } catch (FileNotFoundException e) {
                     this.currentTry++;
                     if (this.create) {
-                        Log.i(TAG, "write: file does not exist, creating and retrying to write");
+                        Log.i(TAG, "write: " + this.filename + ": file does not exist, creating and retrying to write");
                     } else {
-                        Log.e(TAG, "write: cant write from file: " + e.getMessage());
+                        Log.e(TAG, "write: " + this.filename + ": cant write from file: " + e.getMessage());
                     }
                 } catch (IOException e) {
                     this.currentTry++;
-                    Log.e(TAG, "write: cant write from file: " + e.getMessage());
+                    Log.e(TAG, "write: " + this.filename + ": cant write from file: " + e.getMessage());
                 }
             } else {
-                Log.e(TAG, "write: cant write to file: maximum trys (" + this.maximalTry + ") reached");
+                Log.e(TAG, "write: " + this.filename + ": cant write to file: maximum trys (" + this.maximalTry + ") reached");
             }
         }
     }
