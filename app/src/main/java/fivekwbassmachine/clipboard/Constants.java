@@ -31,4 +31,5 @@ public interface Constants {
     short ACTION_EDIT = 1;
     short ACTION_DELETE = 2;
     short ACTION_ADD = 3;
+    String FILE_LIST = "list.json";
 }
