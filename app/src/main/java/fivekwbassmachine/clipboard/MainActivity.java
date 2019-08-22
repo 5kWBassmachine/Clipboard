@@ -27,24 +27,31 @@ package fivekwbassmachine.clipboard;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -52,7 +59,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,15 +68,19 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
     private List<String> listValue = new ArrayList<>();
     //unused-0 private View parentLayout;
     private Context context;
-    private Utils.FileInternal fileInternal;
+    private Utils.FileHandler list;
     private MyAdapter myAdapter;
+    private String version;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         //unused-0 this.parentLayout = findViewById(android.R.id.content);
         this.context = this;
+        this.version = BuildConfig.VERSION_NAME;
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +130,85 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_version).setTitle(getString(R.string.action_version) + ' ' + version);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch(item.getItemId()) {
+            case R.id.action_export_import:
+                final TextView textView = new TextView(context);
+                textView.setText(R.string.alert_export_import_example);
+                new AlertDialog.Builder(context)
+                        .setTitle(getString(R.string.alert_export_import_title))
+                        .setView(textView)
+                        .setPositiveButton(getString(R.string.alert_confirm_import), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String value;
+                                ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(CLIPBOARD_SERVICE);
+                                if (clipboardManager.hasPrimaryClip()) {
+                                    if (clipboardManager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                                        value = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
+                                        if (Utils.JSON.isJSONValid(value, Utils.JSON.JSON_ARRAY)) {
+                                            list.write(Utils.FileHandler.WRITE_REPLACE, value);
+                                            recreate();
+                                        } else {
+                                            Log.w(TAG, "onClick: cant import data from clipboard: invalid data");
+                                            Toast.makeText(context, R.string.feedback_error_import_invalid_clipboard, Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        Log.e(TAG, "onClick: cant import data from clipboard: invalid mime type");
+                                    }
+                                } else {
+                                    Log.e(TAG, "onClick: cant import data from clipboard: no primaryclip");
+                                }
+                            }
+                        })
+                        .setNeutralButton(getString(R.string.alert_confirm_export), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ClipboardManager clipboardManager = (ClipboardManager)context.getSystemService(CLIPBOARD_SERVICE);
+                                ClipData clipData = ClipData.newPlainText("input", list.read());
+                                if (clipboardManager != null) {
+                                    clipboardManager.setPrimaryClip(clipData);
+                                    Toast.makeText(getApplicationContext(), R.string.feedback_copied, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.wtf(TAG, "onButtonClick: unexpected error: clipboardManager is null");
+                                }
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.alert_abort), null)
+                        .show();
+                break;
+            case R.id.action_update:
+                Toast.makeText(context, R.string.feedback_error_not_implemented, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_fork:
+                // open clipboard on github in browser
+                String url = getString(R.string.internal_fork);
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                break;
+            case R.id.action_version:
+                // do nothing, only info
+                //@TODO prevent menu closing
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onButtonClick(final int position, short action) {
         Log.d(TAG, "onButtonClick: pos: " + position + "; action: " + action);
         Log.d(TAG, "Creating new Intent");
@@ -157,9 +246,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
     }
 
     private void getLists() {
-        this.fileInternal = new Utils.FileInternal(context,"list.json", true);
-        fileInternal.resetCurrentTry();
-        String tmpFile = fileInternal.read();
+        this.list = new Utils.FileHandler(context, Constants.FILE_LIST, true);
+        list.resetCurrentTry();
+        String tmpFile = list.read();
         if (tmpFile.length() > 0) {
             try {
                 JSONArray tmp = new JSONArray(tmpFile);
@@ -249,8 +338,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
                 tmpObject.put("value", listValue.get(i));
                 tmpArray.put(i, tmpObject);
             }
-            fileInternal.resetCurrentTry();
-            fileInternal.write(Utils.FileInternal.WRITE_REPLACE, tmpArray.toString());
+            list.resetCurrentTry();
+            list.write(Utils.FileHandler.WRITE_REPLACE, tmpArray.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -267,8 +356,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnButto
                 tmpObject.put("value", listValue.get(i));
                 tmpArray.put(i, tmpObject);
             }
-            fileInternal.resetCurrentTry();
-            fileInternal.write(Utils.FileInternal.WRITE_REPLACE, tmpArray.toString());
+            list.resetCurrentTry();
+            list.write(Utils.FileHandler.WRITE_REPLACE, tmpArray.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
