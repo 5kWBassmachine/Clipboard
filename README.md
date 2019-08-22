@@ -17,5 +17,4 @@ You need to allow the installation of non-PlayStore apps in your settings.
 
 ## ToDo List:
 - [patch-fix] the add button hides the buttons of the last list item
-- [minor-new] add option menu with credits, option to save in internal/ external storage
 - [minor-new] add search for update & install update to menu
